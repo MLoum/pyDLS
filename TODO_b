@@ -1,0 +1,46 @@
+# TODO
+
+## Core :
+    - Code for one Angle :
+        - Correlate raw data
+        - Cumulants
+        - Contin :
+            - Test ac pyContin
+        - L-Contin
+    - Code Multi Angle :
+        - Global fit Cumulants
+        - Mean from Contin (Global Contin ?)
+    
+
+## Hardware :
+   - Code the virtual classes and their interaction
+   - Code for specific hardware
+   - ORdre des opérations (dans un thread dédié) :
+        - Aller à l'angle de départ
+        - Déplacer la platine et attendre la fin du déplacement
+        - Allumer le Laser (Faculatitif)
+        - Lancer le time tag et attendre.
+        - Angle suivant
+    - SLS :
+        - Déplacment très lent (~~120s pour 120°) de la platine et faire du time tag durant cette durée.
+        - Redecouper ensuite le fichier
+
+## View :
+    - Create different Thread for measurement, calculation and display
+    - General Layout / Elements of the UI :
+        - Experience parameters (angle start, stop, step, measurement time). Start and Stop button
+        - Hardware :
+            - Rotation Stage : Current Angle, speed
+            - Couting Card : Current nb of click, integration time, chart (?)
+            - Detectors : Current nb of click, temperature, polarisation, etc...
+            - Laser : On/Off (with security), Power
+            
+        - Table with the angle mesaurement. Cliking on one (or several) display the correlation curve/spectra.
+        - Display results during measurement:
+            - Evolution of X² of cumulant and Beta vs Angle 
+            - Evolution of Gamma (or particle size) and µ2
+            - Value of Gamma (or size) and µ2 based on global fitting
+            - Contin Results 
+    - Two modes :
+        - Cross correlation btw detector
+        - Two angles measurement.        
