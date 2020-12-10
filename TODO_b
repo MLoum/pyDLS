@@ -10,6 +10,9 @@
     - Code Multi Angle :
         - Global fit Cumulants
         - Mean from Contin (Global Contin ?)
+
+    - Fixer les limites en x du fit. En particulier s'il y a de l'afterpulsing.
+    - Code pour selectionner seulement une partie du fichier (enlever les grosses poussières).
     
 
 ## Hardware :
@@ -30,7 +33,7 @@
     - General Layout / Elements of the UI :
         - Experience parameters (angle start, stop, step, measurement time). Start and Stop button
         - Hardware :
-            - Rotation Stage : Current Angle, speed
+            - Rotation Stage : Current Angle, speed, LED ON/OFF (busy), polling position ?
             - Couting Card : Current nb of click, integration time, chart (?)
             - Detectors : Current nb of click, temperature, polarisation, etc...
             - Laser : On/Off (with security), Power
@@ -38,7 +41,8 @@
         - Table with the angle mesaurement. Cliking on one (or several) display the correlation curve/spectra.
         - Display results during measurement:
             - Evolution of X² of cumulant and Beta vs Angle 
-            - Evolution of Gamma (or particle size) and µ2
+            - Evolution of Gamma (or particle size) and µ2 vs Angle
+            - SLS with volume correction
             - Value of Gamma (or size) and µ2 based on global fitting
             - Contin Results 
     - Two modes :

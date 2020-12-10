@@ -13,15 +13,25 @@ from lmfit.models import LinearModel, ExponentialModel
 from core.pycorrelate import pcorrelate, correlate_whal
 
 class SingleAngleMeasurement():
-
     def __init__(self, full_measurement, angle, raw_data):
+        """:arg
+        full measurement ?
+        """
         self.full_measurement = full_measurement
         self.angle = angle
         self.raw_data = raw_data
+
+        self.nb_photons = None
+
+        # Macrotime arrival time
+        self.ticks = None
+
         self.correlation_curve = None
         self.error_bar = None
         self.time_axis = None
-        self.cumulants = {}
+        self.fit_x, self.fit_y = None
+        self.cumulants = None
+        self.contin_results = None
 
     def import_data(self, file_path):
         if (os.path.isfile(file_path)) is False:
@@ -75,7 +85,7 @@ class SingleAngleMeasurement():
 
         return "OK"
 
-    def correlate_raw_data(self, timestamps_1, timestamps_2, max_correlation_time_in_tick, start_correlation_time_in_tick, nb_of_point_per_cascade_aka_B, tick_duration_micros, algo="Whal"):
+    def correlate_raw_data(self):
         """
         :param timestamps_1:
         :param timestamps_2:
@@ -85,10 +95,21 @@ class SingleAngleMeasurement():
         :param tick_duration_micros:
         :return:
         """
-        self.tick_duration_micros = tick_duration_micros
+        #FIXME For now Only two detectors
+
+        self.tick_duration_micros = self.full_measurement.tick_duration_micros
 
         # TODO nb_of_workers based on user preference.
-        nb_of_workers = 4
+        self.nb_of_workers = self.full_measurement.correlation_nb_of_workers
+
+        timestamps_1 = self.ticks[0]
+        if len(self.ticks) > 1:
+            if self.full_measurement.is_cross_correlation:
+                timestamps_2 = self.ticks[1]
+            else:
+                timestamps_2 = timestamps_1
+        else:
+            timestamps_2 = timestamps_1
 
         # Split the timeStamps in array
         self.max_time_in_tick_1 = timestamps_1[-1]
@@ -102,7 +123,7 @@ class SingleAngleMeasurement():
         ratio_lag_vs_file_duration = 6
 
         # nb_of_chunk = int(self.max_time_in_tick_1/(max_correlation_time_in_tick*ratio_lag_vs_file_duration))
-
+        max_correlation_time_in_tick = self.full_measurement.max_correlation_time_in_tick
         nb_of_max_cor_time = self.max_time_in_tick_1 / max_correlation_time_in_tick
 
         i = 0
@@ -147,6 +168,8 @@ class SingleAngleMeasurement():
         self.num_last_photon = np.searchsorted(timestamps_1, self.max_time_in_tick_1 - max_correlation_time_in_tick)
         self.end_time_correlation_tick = timestamps_1[self.num_last_photon]
 
+        start_correlation_time_in_tick = self.full_measurement.start_correlation_time_in_tick
+        nb_of_point_per_cascade_aka_B = self.full_measurement.nb_of_point_per_cascade_aka_B
         self.time_axis = self.create_list_time_correlation(start_correlation_time_in_tick,
                                                            max_correlation_time_in_tick,
                                                            point_per_decade=nb_of_point_per_cascade_aka_B)
@@ -154,6 +177,8 @@ class SingleAngleMeasurement():
         # self.correlation_curve = np.zeros(self.nb_of_correlation_point, dtype=np.int)
 
         #self.log("Creating a pool of %d workers\n" % nb_of_workers)
+        nb_of_workers = self.full_measurement.correlation_nb_of_workers
+        algo = self.full_measurement.algo
         p = mp.Pool(nb_of_workers)
         #self.log("Calculating Correlation \n")
         if algo == "Laurence":
@@ -191,7 +216,6 @@ class SingleAngleMeasurement():
     def scale_time_axis(self):
         self.time_axis = self.tick_duration_micros * self.time_axis.astype(np.float64)
 
-
     def create_list_time_correlation(self, start_correlation_time_in_tick, max_correlation_time_tick, point_per_decade):
         B = self.point_per_decade = point_per_decade
         # How many "cascade" do we need ?
@@ -228,11 +252,11 @@ class SingleAngleMeasurement():
     def fit_cumulants(self, is_error_bar_for_fit=True):
 
         # Set data boundaries
-        if self.full_measurement.correlation_time_start != 0:
+        if self.full_measurement.correlation_fit_time_start != 0:
             idx_start = np.searchsorted(self.time_axis, self.full_measurement.correlation_time_start)
         else:
             idx_start = 0
-        if self.full_measurement.correlation_time_end != -1:
+        if self.full_measurement.correlation_fut_time_end != -1:
             idx_end = np.searchsorted(self.time_axis, self.full_measurement.correlation_time_end)
         else:
             idx_end = -1
@@ -252,7 +276,6 @@ class SingleAngleMeasurement():
         self.model.guess(y, x, error_bar=error_bar)
 
         # fitting
-
         self.fit_results_method1 = self.fit_results = self.model.fit(y, self.params, t=x, weights=error_bar,
                                                                      method=self.full_measurement.fitting_method1)
 
@@ -260,7 +283,7 @@ class SingleAngleMeasurement():
             self.fit_results = self.model.fit(y, self.fit_results.params, weights=error_bar, t=x,
                                               method=self.full_measurement.fitting_method2)
 
-        self.best_fit = self.fit_results.best_fit
+        self.fit_y = self.fit_results.best_fit
         self.fit_x, self.residual_x  = x
 
         self.residuals = self.fit_results.residual

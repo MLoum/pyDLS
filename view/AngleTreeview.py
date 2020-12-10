@@ -5,13 +5,15 @@ from tkinter import ttk
 
 
 class AngleTreeview():
-    def __init__(self, root):
-        self.root = root
+    def __init__(self, master_frame, view, controller):
+        self.master_frame = master_frame
+        self.view = view
+        self.controller = controller
         self.create_angle_treeview()
 
 
     def create_angle_treeview(self):
-        self.frame_tree_view = tk.LabelFrame(self.root, text="Angle browser",
+        self.frame_tree_view = tk.LabelFrame(self.master_frame, text="Angle browser",
                                              borderwidth=1)
         self.frame_tree_view.pack(side="top", fill="both", expand=True)
 
@@ -23,17 +25,17 @@ class AngleTreeview():
         # remove first empty column with the identifier
         # self.tree_view['show'] = 'headings'
         # tree.column("#0", width=270, minwidth=270, stretch=tk.NO) tree.column("one", width=150, minwidth=150, stretch=tk.NO) tree.column("two", width=400, minwidth=200) tree.column("three", width=80, minwidth=50, stretch=tk.NO)
-        self.tree_view.column("#0", width=25, stretch=tk.NO)
-        self.tree_view.column("Angle", width=300, stretch=tk.YES, anchor=tk.CENTER)
-        self.tree_view.column("Nb of tick", width=75, stretch=tk.YES, anchor=tk.CENTER)
-        self.tree_view.column("Intensity", width=300, stretch=tk.YES, anchor=tk.CENTER)
-        self.tree_view.column("Mean size", width=75, stretch=tk.YES, anchor=tk.CENTER)
-        self.tree_view.column("µ2", width=75, stretch=tk.YES, anchor=tk.CENTER)
-        self.tree_view.column("µ3", width=75, stretch=tk.YES, anchor=tk.CENTER)
-        self.tree_view.column("µ4", width=75, stretch=tk.YES, anchor=tk.CENTER)
-        self.tree_view.column("beta", width=600, stretch=tk.YES, anchor=tk.CENTER)
-        self.tree_view.column("t_start_µs", width=50, stretch=tk.YES, anchor=tk.CENTER)
-        self.tree_view.column("t_end_µs", width=50, stretch=tk.YES, anchor=tk.CENTER)
+        self.tree_view.column("#0", width=45, stretch=tk.NO)
+        self.tree_view.column("Angle", width=75, stretch=tk.YES, anchor=tk.CENTER)
+        self.tree_view.column("Nb of tick", width=70, stretch=tk.YES, anchor=tk.CENTER)
+        self.tree_view.column("Intensity", width=70, stretch=tk.YES, anchor=tk.CENTER)
+        self.tree_view.column("Mean size", width=70, stretch=tk.YES, anchor=tk.CENTER)
+        self.tree_view.column("µ2", width=70, stretch=tk.YES, anchor=tk.CENTER)
+        self.tree_view.column("µ3", width=70, stretch=tk.YES, anchor=tk.CENTER)
+        self.tree_view.column("µ4", width=70, stretch=tk.YES, anchor=tk.CENTER)
+        self.tree_view.column("beta", width=70, stretch=tk.YES, anchor=tk.CENTER)
+        self.tree_view.column("t_start_µs", width=70, stretch=tk.YES, anchor=tk.CENTER)
+        self.tree_view.column("t_end_µs", width=70, stretch=tk.YES, anchor=tk.CENTER)
 
         self.tree_view.heading("Angle", text="Angle")
         self.tree_view.heading("Nb of tick", text="Nb of tick")

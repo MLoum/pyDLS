@@ -1,14 +1,13 @@
 # coding: utf-8
-from hardware.CoutingCard import CoutingCard
+from hardware.CountingCard import CountingCard
 import ctypes
 import os, sys
 import threading
 import time
-from PIL import Image, ImageTk
 
 
 
-class FPGA_nist(CoutingCard):
+class FPGA_nist(CountingCard):
     FPGA_NO_CHANGE = 0
     FPGA_CLEAR = 1
     FPGA_DISABLE = 2
@@ -16,7 +15,7 @@ class FPGA_nist(CoutingCard):
     # FPGA_GETDATA = 8  # only for counts firmware.
 
     def __init__(self, main_ui):
-        super(self).__init__(main_ui)
+        super().__init__(main_ui)
         array_of_16_longlong  = ctypes.c_longlong * 32
         self.stats = array_of_16_longlong()
         # array_of_16_int  = ctypes.c_int * 32

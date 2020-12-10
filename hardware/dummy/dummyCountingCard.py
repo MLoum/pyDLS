@@ -1,9 +1,9 @@
-from hardware.Device import Device
+from hardware.CountingCard import CountingCard
 
 
-class CoutingCard(Device):
+class DummyCountingCard(CountingCard):
     def __init__(self, main_ui):
-        super(self).__init__(main_ui)
+        super().__init__(main_ui)
 
     def set_time_tag_file(self, file_path):
         pass

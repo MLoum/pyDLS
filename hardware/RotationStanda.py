@@ -18,7 +18,7 @@ from hardware.standa.pyximc import *
 class RotationStanda(RotationStage):
 
     def __init__(self, main_ui):
-        super(self).__init__(main_ui)
+        super().__init__(main_ui)
 
     def load_device(self, params=None):
         """

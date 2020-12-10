@@ -1,12 +1,9 @@
 
-from Controller.Controller import Controller
-
+from controller import Controller
+from view.gui import View
+from core.FullAngleMeasurement import FullAngleMeasurement
 
 if __name__ == "__main__":
-
-
-    #core =  model.PropSpecReaderModel()
-    #ctrl = controller.controller(core)
-
-    controller = Controller()
+    fullAngleMeasurement = FullAngleMeasurement()
+    controller = Controller(fullAngleMeasurement)
     controller.run()

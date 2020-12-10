@@ -2,6 +2,10 @@ from hardware.RotationStanda import RotationStanda
 from hardware.fpga_nist import FPGA_nist
 from hardware.Laser import Laser
 
+from hardware.dummy.dummyCountingCard import DummyCountingCard
+from hardware.dummy.dummyLaser import DummyLaser
+from hardware.dummy.dummyRotationStage import DummyRotationStage
+
 from core.SingleAngleMeasurement import SingleAngleMeasurement
 from core.FullAngleMeasurement import FullAngleMeasurement
 
@@ -9,18 +13,35 @@ import threading
 
 import numpy as np
 
+from view.gui import View
 class Controller():
-    def __init(self, view, full_angle_measurements):
-        self.view = view
+    def __init__(self, full_angle_measurements):
+
+        self.view = View(self)
+        self.rotation_stage = DummyRotationStage(self.view)
+        self.couting_card = DummyCountingCard(self.view)
+        self.laser = DummyLaser(self.view)
+
+        self.view.create_architecture()
         self.full_angle_measurements = full_angle_measurements
-        self.rotation_stage = RotationStanda(self.view)
-        self.couting_card = FPGA_nist(self.view)
-        self.laser = Laser(self.view)
+
+        # self.rotation_stage = RotationStanda(self.view)
+        # self.couting_card = FPGA_nist(self.view)
+        # self.laser = Laser(self.view)
+
+
+        self.laser = DummyLaser(self.view)
         # FIXME ? Dans le core ?
         self.exp_param = {}
 
+    def run(self):
+        self.view.root.title("pyDLS")
+        self.view.root.deiconify()
+        self.view.root.deiconify()
+        self.view.root.mainloop()
+
     def launch_DLS_Measurement(self):
-        self.thread_DLS_Measurement = threading.Thread(name='FGPA record', target=self.DLS_Measurement)
+        self.thread_DLS_Measurement = threading.Thread(name='DLS Measurement', target=self.DLS_Measurement)
         # self.thread_monitor = threading.Thread(name='FGPA monitor', target=self.monitor)
         self.thread_DLS_Measurement.start()
         # self.thread_monitor.start()
@@ -32,6 +53,9 @@ class Controller():
         if self.thread_DLS_Measurement.is_alive():
             self.thread_DLS_Measurement.join(timeout=0.5)
             # self.thread_monitor.join(timeout=0.5)
+
+    def set_exp_param(self, exp_param):
+        self.exp_param = exp_param
 
     def DLS_Measurement(self):
         nb_step = self.exp_param["theta_nb_step"]
@@ -57,9 +81,12 @@ class Controller():
             # Gather data and start analizing it in another thread
             self.full_angle_measurements.add_single_angle_measurement(is_analyze_in_own_thread=True)
 
-    def DLS_Measurement(self):
+    def SLS_Measurement(self):
         pass
         """
         Envoyer des impulsions de la platine sur la quatrièeme voie de la carte pour connaitre la position angulaire ?
         the controller can output synchronization pulse each time it moves a certain distance        
         """
+
+    def goto_angle(self, angle_degree):
+        self.rotation_stage.move_absolute(angle_degree)
